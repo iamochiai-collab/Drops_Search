@@ -662,3 +662,176 @@ select:focus {
     border-radius: 22px;
   }
 }
+
+
+/* v12: カテゴリごとのやさしい色分け */
+:root {
+  --cat-all-bg: linear-gradient(135deg, #334155, #475569);
+  --cat-all-text: #ffffff;
+
+  --cat-people-1: #f49ba7;
+  --cat-people-2: #f8c6ce;
+  --cat-people-chip: #fff3f5;
+  --cat-people-border: #efb1ba;
+  --cat-people-text: #7b3b48;
+
+  --cat-action-1: #8dbaf7;
+  --cat-action-2: #c7defc;
+  --cat-action-chip: #f2f8ff;
+  --cat-action-border: #a9c8f4;
+  --cat-action-text: #355b8b;
+
+  --cat-food-1: #93d4ae;
+  --cat-food-2: #caedd7;
+  --cat-food-chip: #f1fbf5;
+  --cat-food-border: #a8dcc0;
+  --cat-food-text: #386b51;
+
+  --cat-homein-1: #baa7f4;
+  --cat-homein-2: #ddd3fb;
+  --cat-homein-chip: #f7f4ff;
+  --cat-homein-border: #c9bbf7;
+  --cat-homein-text: #57458d;
+
+  --cat-homeout-1: #7fd1d3;
+  --cat-homeout-2: #c5eef0;
+  --cat-homeout-chip: #f1fcfc;
+  --cat-homeout-border: #a2e0e2;
+  --cat-homeout-text: #2f6f72;
+
+  --cat-culture-1: #f0c782;
+  --cat-culture-2: #f9e5b8;
+  --cat-culture-chip: #fffaf0;
+  --cat-culture-border: #f2d79f;
+  --cat-culture-text: #7b5a25;
+}
+
+/* 左のカテゴリチップ */
+#categoryButtons .chip {
+  font-weight: 700;
+  border-width: 1.5px;
+}
+
+#categoryButtons .chip[data-cat=""] {
+  background: var(--cat-all-bg);
+  color: var(--cat-all-text);
+  border-color: transparent;
+}
+
+#categoryButtons .chip[data-cat="人・動植物"] {
+  background: var(--cat-people-chip);
+  border-color: var(--cat-people-border);
+  color: var(--cat-people-text);
+}
+#categoryButtons .chip[data-cat="人・動植物"].active {
+  background: linear-gradient(135deg, var(--cat-people-1), var(--cat-people-2));
+  color: #5f2c37;
+  border-color: transparent;
+}
+
+#categoryButtons .chip[data-cat="動き・様子"] {
+  background: var(--cat-action-chip);
+  border-color: var(--cat-action-border);
+  color: var(--cat-action-text);
+}
+#categoryButtons .chip[data-cat="動き・様子"].active {
+  background: linear-gradient(135deg, var(--cat-action-1), var(--cat-action-2));
+  color: #254a75;
+  border-color: transparent;
+}
+
+#categoryButtons .chip[data-cat="飲食物"] {
+  background: var(--cat-food-chip);
+  border-color: var(--cat-food-border);
+  color: var(--cat-food-text);
+}
+#categoryButtons .chip[data-cat="飲食物"].active {
+  background: linear-gradient(135deg, var(--cat-food-1), var(--cat-food-2));
+  color: #28563f;
+  border-color: transparent;
+}
+
+#categoryButtons .chip[data-cat="家の中・身の回り"] {
+  background: var(--cat-homein-chip);
+  border-color: var(--cat-homein-border);
+  color: var(--cat-homein-text);
+}
+#categoryButtons .chip[data-cat="家の中・身の回り"].active {
+  background: linear-gradient(135deg, var(--cat-homein-1), var(--cat-homein-2));
+  color: #453374;
+  border-color: transparent;
+}
+
+#categoryButtons .chip[data-cat="家の外"] {
+  background: var(--cat-homeout-chip);
+  border-color: var(--cat-homeout-border);
+  color: var(--cat-homeout-text);
+}
+#categoryButtons .chip[data-cat="家の外"].active {
+  background: linear-gradient(135deg, var(--cat-homeout-1), var(--cat-homeout-2));
+  color: #23595c;
+  border-color: transparent;
+}
+
+#categoryButtons .chip[data-cat="文化・社会"] {
+  background: var(--cat-culture-chip);
+  border-color: var(--cat-culture-border);
+  color: var(--cat-culture-text);
+}
+#categoryButtons .chip[data-cat="文化・社会"].active {
+  background: linear-gradient(135deg, var(--cat-culture-1), var(--cat-culture-2));
+  color: #64461b;
+  border-color: transparent;
+}
+
+/* 画像カード上部バナー */
+.card[data-category="人・動植物"]::before {
+  background: linear-gradient(90deg, var(--cat-people-1), var(--cat-people-2));
+}
+.card[data-category="動き・様子"]::before {
+  background: linear-gradient(90deg, var(--cat-action-1), var(--cat-action-2));
+}
+.card[data-category="飲食物"]::before {
+  background: linear-gradient(90deg, var(--cat-food-1), var(--cat-food-2));
+}
+.card[data-category="家の中・身の回り"]::before {
+  background: linear-gradient(90deg, var(--cat-homein-1), var(--cat-homein-2));
+}
+.card[data-category="家の外"]::before {
+  background: linear-gradient(90deg, var(--cat-homeout-1), var(--cat-homeout-2));
+}
+.card[data-category="文化・社会"]::before {
+  background: linear-gradient(90deg, var(--cat-culture-1), var(--cat-culture-2));
+}
+
+/* カードを少しカテゴリ色になじませる */
+.card[data-category="人・動植物"] .thumb-wrap {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.95), rgba(255, 244, 246, 0.92)),
+    linear-gradient(135deg, #fff8f9, #fff2f4);
+}
+.card[data-category="動き・様子"] .thumb-wrap {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.95), rgba(242, 248, 255, 0.92)),
+    linear-gradient(135deg, #f7fbff, #eef5ff);
+}
+.card[data-category="飲食物"] .thumb-wrap {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.95), rgba(242, 252, 246, 0.92)),
+    linear-gradient(135deg, #f7fff9, #eefaf2);
+}
+.card[data-category="家の中・身の回り"] .thumb-wrap {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.95), rgba(247, 244, 255, 0.92)),
+    linear-gradient(135deg, #fbf9ff, #f4efff);
+}
+.card[data-category="家の外"] .thumb-wrap {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.95), rgba(241, 252, 252, 0.92)),
+    linear-gradient(135deg, #f6ffff, #edfafa);
+}
+.card[data-category="文化・社会"] .thumb-wrap {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.95), rgba(255, 250, 240, 0.92)),
+    linear-gradient(135deg, #fffdf7, #fff7e9);
+}

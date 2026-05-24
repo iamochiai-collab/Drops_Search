@@ -211,7 +211,7 @@ function render() {
     const isFavorite = favoriteIds.has(card.id);
     const isSelected = selectedIds.has(card.id);
     return `
-      <article class="card ${isFavorite ? 'is-favorite' : ''} ${isSelected ? 'is-selected' : ''}" tabindex="0" data-id="${card.id}">
+      <article class="card ${isFavorite ? 'is-favorite' : ''} ${isSelected ? 'is-selected' : ''}" tabindex="0" data-id="${card.id}" data-category="${escapeHtml(card.category)}">
         <div class="card-top-actions">
           <button class="icon-action favorite ${isFavorite ? 'active' : ''}" type="button" data-action="favorite" data-id="${card.id}" title="お気に入り">${isFavorite ? '★' : '☆'}<span>お気に入り</span></button>
           <button class="icon-action select ${isSelected ? 'active' : ''}" type="button" data-action="select" data-id="${card.id}" title="選択">${isSelected ? '☑' : '☐'}<span>選択</span></button>
