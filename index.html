@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ドロップレット検索</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <h1>ドロップレット検索</h1>
+      <p class="lead">1406枚のドロップレット画像を、カテゴリ・小カテゴリ・あいまいキーワードで検索できるサイト。</p>
+      <p class="sublead">ひらがな・カタカナ・漢字のゆれ、関連語・別名・読み方もできるだけ広めに拾うようにしているよ。</p>
+      <div class="stats">
+        <span class="stat"><strong id="totalCount">-</strong> 画像</span>
+        <span class="stat"><strong id="resultCount">-</strong></span>
+        <span class="stat"><strong id="favoriteCount">0</strong> お気に入り</span>
+        <span class="stat"><strong id="selectedCountInline">0</strong> 選択中</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap main-layout">
+    <section class="panel controls">
+      <div class="search-row">
+        <label class="sr-only" for="searchInput">検索</label>
+        <input id="searchInput" type="search" placeholder="例：おとこ / 先生 / でんしゃ / びょういん / ありがとう" autocomplete="off">
+        <button id="clearButton" class="secondary-button" type="button">クリア</button>
+      </div>
+
+      <div class="quick-tags-block">
+        <div class="section-label">よく使うタグ</div>
+        <div id="commonTags" class="chip-row quick-tags"></div>
+      </div>
+
+      <div class="helper-row">
+        <button id="favoriteFilterButton" class="toggle-chip" type="button" aria-pressed="false">★ お気に入りだけ表示</button>
+        <button id="showSelectedButton" class="toggle-chip" type="button" aria-pressed="false">☑ 選択中だけ表示</button>
+      </div>
+
+      <div id="categoryButtons" class="chip-row"></div>
+
+      <div class="filter-grid">
+        <label>
+          <span>大カテゴリ</span>
+          <select id="categorySelect"></select>
+        </label>
+        <label>
+          <span>小カテゴリ</span>
+          <select id="subcategorySelect"></select>
+        </label>
+        <label>
+          <span>並び替え</span>
+          <select id="sortSelect">
+            <option value="score">おすすめ順</option>
+            <option value="code">番号順</option>
+            <option value="title">タイトル順</option>
+            <option value="favorite">お気に入り優先</option>
+          </select>
+        </label>
+      </div>
+
+      <details class="tips">
+        <summary>検索のコツ</summary>
+        <ul>
+          <li>「おとこ」「男」「男性」みたいな表記ゆれで探せるようにしてある。</li>
+          <li>スペース区切りで複数語検索できる。例：「先生 女」</li>
+          <li>「よく使うタグ」を押すと、検索窓に追加できる。</li>
+          <li>各画像で <strong>お気に入り</strong>・<strong>選択</strong>・<strong>コピー</strong>・<strong>保存</strong> ができる。</li>
+        </ul>
+      </details>
+    </section>
+
+    <section class="panel results-panel">
+      <div id="selectionBar" class="selection-bar" hidden>
+        <div class="selection-info">選択中：<strong id="selectedCountBar">0</strong>枚</div>
+        <div class="selection-actions">
+          <button id="selectVisibleButton" class="secondary-button" type="button">表示中を全部選択</button>
+          <button id="clearSelectionButton" class="secondary-button" type="button">選択解除</button>
+          <button id="bulkDownloadButton" class="primary-action" type="button">⬇ 選択した画像を一括ダウンロード</button>
+        </div>
+      </div>
+
+      <div id="grid" class="grid"></div>
+      <button id="moreButton" class="more-button" type="button">もっと見る</button>
+    </section>
+  </main>
+
+  <dialog id="previewDialog" class="preview-dialog">
+    <div class="dialog-top">
+      <h2 id="previewTitle"></h2>
+      <button id="closeDialog" class="icon-button close-button" type="button" aria-label="閉じる">✕</button>
+    </div>
+    <div class="preview-body">
+      <div class="preview-image-wrap">
+        <img id="previewImage" alt="">
+      </div>
+      <div class="preview-info">
+        <p id="previewMeta" class="preview-meta"></p>
+        <p id="previewOriginal" class="preview-original"></p>
+        <p id="previewTags" class="preview-tags"></p>
+        <div class="preview-actions">
+          <button id="previewFavorite" class="secondary-button" type="button">☆ お気に入りに追加</button>
+          <button id="previewSelect" class="secondary-button" type="button">☑ この画像を選択</button>
+          <button id="previewCopy" class="primary-action" type="button"><span class="btn-icon">📋</span>画像をコピー</button>
+          <button id="previewDownload" class="primary-action" type="button"><span class="btn-icon">⬇</span>ダウンロード</button>
+          <button id="previewOpen" class="secondary-button" type="button">画像だけ開く</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
