@@ -318,3 +318,16 @@ input[type="search"], select {
     font-size: 0.8rem;
   }
 }
+
+
+/* v8: 反映確認用バナー */
+.version-banner {
+  display: inline-block;
+  margin: 8px 0 12px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #111827;
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(17, 24, 39, 0.18);
+}
