@@ -217,3 +217,104 @@ input[type="search"], select {
   .controls { position: static; }
   .preview-body { grid-template-columns: 1fr; }
 }
+
+
+/* v6: ボタン内の文字が「コピ」「ー」のように分かれないように固定 */
+.icon-action,
+.primary-action,
+.secondary-button,
+.toggle-chip,
+.chip {
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.card-actions {
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 520px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+
+  .icon-action {
+    font-size: 0.86rem;
+    padding: 8px 6px;
+  }
+}
+
+
+/* v7: ボタンの文字ずれ修正・タグ選択挙動に合わせた見た目 */
+.card-top-actions,
+.card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.icon-action {
+  min-width: 0;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow: hidden;
+  text-overflow: clip;
+  line-height: 1;
+  min-height: 38px;
+  padding: 8px 6px;
+  gap: 4px;
+}
+
+.icon-action span {
+  display: inline-block;
+  white-space: nowrap;
+  word-break: keep-all;
+  line-height: 1;
+}
+
+.icon-action.favorite,
+.icon-action.select {
+  font-size: 0.82rem;
+  letter-spacing: -0.04em;
+}
+
+.icon-action:not(.favorite):not(.select) {
+  font-size: 0.86rem;
+}
+
+.quick-tag.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.chip[data-cat=""] {
+  background: #111827;
+  border-color: #111827;
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(17, 24, 39, 0.18);
+}
+
+.chip[data-cat=""].active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.category-emphasis-note {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+@media (max-width: 520px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  }
+
+  .icon-action.favorite,
+  .icon-action.select {
+    font-size: 0.8rem;
+  }
+}

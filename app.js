@@ -144,11 +144,19 @@ function buildQuickTags() {
   document.querySelectorAll('.quick-tag').forEach(btn => {
     btn.addEventListener('click', () => {
       const tag = btn.dataset.tag;
-      const current = $('searchInput').value.trim();
-      const tokens = current ? current.split(/[\s　]+/) : [];
-      if (!tokens.includes(tag)) {
-        $('searchInput').value = current ? `${current} ${tag}` : tag;
+      const alreadyActive = btn.classList.contains('active');
+
+      // よく使うタグは「1つだけ選択」方式。
+      // 同じタグをもう一度押したら解除、別のタグを押したら前のタグ検索を消して置き換える。
+      document.querySelectorAll('.quick-tag').forEach(b => b.classList.remove('active'));
+
+      if (alreadyActive) {
+        $('searchInput').value = '';
+      } else {
+        btn.classList.add('active');
+        $('searchInput').value = tag;
       }
+
       applySearch();
       $('searchInput').focus();
     });
@@ -205,8 +213,8 @@ function render() {
     return `
       <article class="card ${isFavorite ? 'is-favorite' : ''} ${isSelected ? 'is-selected' : ''}" tabindex="0" data-id="${card.id}">
         <div class="card-top-actions">
-          <button class="icon-action favorite ${isFavorite ? 'active' : ''}" type="button" data-action="favorite" data-id="${card.id}" title="お気に入り">${isFavorite ? '★' : '☆'} お気に入り</button>
-          <button class="icon-action select ${isSelected ? 'active' : ''}" type="button" data-action="select" data-id="${card.id}" title="選択">${isSelected ? '☑' : '☐'} 選択</button>
+          <button class="icon-action favorite ${isFavorite ? 'active' : ''}" type="button" data-action="favorite" data-id="${card.id}" title="お気に入り">${isFavorite ? '★' : '☆'}<span>お気に入り</span></button>
+          <button class="icon-action select ${isSelected ? 'active' : ''}" type="button" data-action="select" data-id="${card.id}" title="選択">${isSelected ? '☑' : '☐'}<span>選択</span></button>
         </div>
         <div class="thumb-wrap">
           <img class="thumb" src="${card.image}" alt="${escapeHtml(card.title)}" loading="lazy">
@@ -216,8 +224,8 @@ function render() {
           <div class="meta">${escapeHtml(card.subcategory)} / ${escapeHtml(card.code)}</div>
         </div>
         <div class="card-actions">
-          <button class="icon-action" type="button" data-action="copy" data-id="${card.id}" title="画像をコピー">📋 コピー</button>
-          <button class="icon-action" type="button" data-action="download" data-id="${card.id}" title="ダウンロード">⬇ 保存</button>
+          <button class="icon-action" type="button" data-action="copy" data-id="${card.id}" title="画像をコピー"><span>📋</span><span>コピー</span></button>
+          <button class="icon-action" type="button" data-action="download" data-id="${card.id}" title="ダウンロード"><span>⬇</span><span>保存</span></button>
         </div>
       </article>
     `;
@@ -299,15 +307,49 @@ async function fetchImageBlob(card) {
   return await res.blob();
 }
 
+function loadImageForCanvas(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+async function makePngBlobForClipboard(card) {
+  // Clipboard APIはGIFのままでは失敗するブラウザが多いので、
+  // コピー時だけPNGに変換してからクリップボードへ入れる。
+  const img = await loadImageForCanvas(card.image);
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth || img.width;
+  canvas.height = img.naturalHeight || img.height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  return await new Promise((resolve, reject) => {
+    canvas.toBlob(blob => {
+      if (blob) resolve(blob);
+      else reject(new Error('PNG変換に失敗しました'));
+    }, 'image/png');
+  });
+}
+
 async function copyImage(card) {
   try {
-    const blob = await fetchImageBlob(card);
     if (!navigator.clipboard || !window.ClipboardItem) throw new Error('copy-unsupported');
-    await navigator.clipboard.write([new ClipboardItem({ [blob.type || 'image/png']: blob })]);
+    const pngBlob = await makePngBlobForClipboard(card);
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
     showToast('画像をコピーしたよ');
   } catch (err) {
     console.error(err);
-    showToast('コピーできなかったので、プレビューから長押し保存してね');
+    // ブラウザが画像コピーに未対応の場合でも、URLだけはコピーを試す。
+    try {
+      const url = new URL(card.image, location.href).href;
+      await navigator.clipboard.writeText(url);
+      showToast('画像コピーは不可。画像URLをコピーしたよ');
+    } catch {
+      showToast('コピーできなかったので、画像だけ開いて長押し保存してね');
+    }
     openPreview(card.id);
   }
 }
@@ -377,13 +419,20 @@ async function start() {
   updateCounters();
   applySearch();
 
-  $('searchInput').addEventListener('input', applySearch);
+  $('searchInput').addEventListener('input', () => {
+    const value = $('searchInput').value.trim();
+    document.querySelectorAll('.quick-tag.active').forEach(btn => {
+      if (btn.dataset.tag !== value) btn.classList.remove('active');
+    });
+    applySearch();
+  });
   $('categorySelect').addEventListener('change', () => { updateSubcategoryOptions(); applySearch(); });
   $('subcategorySelect').addEventListener('change', applySearch);
   $('sortSelect').addEventListener('change', applySearch);
 
   $('clearButton').addEventListener('click', () => {
     $('searchInput').value = '';
+    document.querySelectorAll('.quick-tag').forEach(b => b.classList.remove('active'));
     $('categorySelect').value = '';
     updateSubcategoryOptions();
     $('subcategorySelect').value = '';
