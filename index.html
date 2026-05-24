@@ -4,13 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ドロップレット検索</title>
-  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="styles.css?v=11">
 </head>
 <body>
   <header class="site-header">
     <div class="wrap">
       <h1>ドロップレット検索</h1>
-      <div class="version-banner">v8反映済み：タグ検索1つだけ・ボタンずれ修正・全部ボタン強調</div>
       <p class="lead">1406枚のドロップレット画像を、カテゴリ・小カテゴリ・あいまいキーワードで検索できるサイト。</p>
       <p class="sublead">ひらがな・カタカナ・漢字のゆれ、関連語・別名・読み方もできるだけ広めに拾うようにしているよ。</p>
       <div class="stats">
@@ -79,6 +78,7 @@
         <div class="selection-actions">
           <button id="selectVisibleButton" class="secondary-button" type="button">表示中を全部選択</button>
           <button id="clearSelectionButton" class="secondary-button" type="button">選択解除</button>
+          <button id="bulkCopyButton" class="primary-action" type="button">📋 選択画像をまとめてコピー</button>
           <button id="bulkDownloadButton" class="primary-action" type="button">⬇ 選択した画像を一括ダウンロード</button>
         </div>
       </div>
@@ -113,6 +113,6 @@
   </dialog>
 
   <div id="toast" class="toast" hidden></div>
-  <script src="app.js?v=8"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>

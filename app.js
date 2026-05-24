@@ -376,6 +376,92 @@ async function bulkDownloadSelected() {
   }
 }
 
+async function bulkCopySelectedAsImage() {
+  const cards = allCards.filter(card => selectedIds.has(card.id));
+  if (!cards.length) {
+    showToast('先に画像を選択してね');
+    return;
+  }
+
+  if (!navigator.clipboard || !window.ClipboardItem) {
+    showToast('このブラウザでは画像コピーに対応していないかも');
+    return;
+  }
+
+  try {
+    showToast(`${cards.length}枚を1枚の画像にまとめてコピー中...`);
+
+    // 選択画像を1枚のシート画像にしてコピーする。
+    // 複数の画像を別々に一括コピーするのはブラウザ対応が不安定なため、この方式にしている。
+    const cellSize = 180;
+    const gap = 18;
+    const labelHeight = 34;
+    const padding = 24;
+    const maxColumns = 5;
+    const columns = Math.min(maxColumns, Math.max(1, Math.ceil(Math.sqrt(cards.length))));
+    const rows = Math.ceil(cards.length / columns);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = padding * 2 + columns * cellSize + (columns - 1) * gap;
+    canvas.height = padding * 2 + rows * (cellSize + labelHeight) + (rows - 1) * gap;
+
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+    ctx.fillStyle = '#1e293b';
+
+    for (const [index, card] of cards.entries()) {
+      const img = await loadImageForCanvas(card.image);
+      const col = index % columns;
+      const row = Math.floor(index / columns);
+      const x = padding + col * (cellSize + gap);
+      const y = padding + row * (cellSize + labelHeight + gap);
+
+      ctx.fillStyle = '#f8fafc';
+      roundRect(ctx, x, y, cellSize, cellSize, 18);
+      ctx.fill();
+
+      const scale = Math.min(cellSize * 0.86 / img.width, cellSize * 0.86 / img.height);
+      const drawW = img.width * scale;
+      const drawH = img.height * scale;
+      const drawX = x + (cellSize - drawW) / 2;
+      const drawY = y + (cellSize - drawH) / 2;
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+      ctx.fillStyle = '#1e293b';
+      const title = card.title.length > 12 ? `${card.title.slice(0, 12)}…` : card.title;
+      ctx.fillText(title, x + cellSize / 2, y + cellSize + labelHeight / 2);
+    }
+
+    const pngBlob = await new Promise((resolve, reject) => {
+      canvas.toBlob(blob => {
+        if (blob) resolve(blob);
+        else reject(new Error('まとめ画像の作成に失敗しました'));
+      }, 'image/png');
+    });
+
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
+    showToast(`${cards.length}枚をまとめ画像としてコピーしたよ`);
+  } catch (err) {
+    console.error(err);
+    showToast('一括コピーできなかった。枚数を減らすか、ダウンロードを使ってね');
+  }
+}
+
+function roundRect(ctx, x, y, width, height, radius) {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + width, y, x + width, y + height, r);
+  ctx.arcTo(x + width, y + height, x, y + height, r);
+  ctx.arcTo(x, y + height, x, y, r);
+  ctx.arcTo(x, y, x + width, y, r);
+  ctx.closePath();
+}
+
 function selectVisible() {
   filteredCards.slice(0, visibleCount).forEach(card => selectedIds.add(card.id));
   updateCounters();
@@ -456,6 +542,7 @@ async function start() {
   $('moreButton').addEventListener('click', () => { visibleCount += PAGE_SIZE; render(); });
   $('selectVisibleButton').addEventListener('click', selectVisible);
   $('clearSelectionButton').addEventListener('click', clearSelection);
+  $('bulkCopyButton').addEventListener('click', bulkCopySelectedAsImage);
   $('bulkDownloadButton').addEventListener('click', bulkDownloadSelected);
 
   $('closeDialog').addEventListener('click', () => $('previewDialog').close());
